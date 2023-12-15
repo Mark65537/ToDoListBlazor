@@ -1,7 +1,24 @@
 ﻿@page "/"
+@inject NavigationManager NavManager
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+@code {
+    private string task;
 
-Welcome to your new app.
+    protected override void OnInitialized()
+    {
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("task", out var taskValue))
+        {
+            task = taskValue.First();
+        }
+    }
+}
+
+@if (!string.IsNullOrEmpty(task))
+{
+    <p>Задача: @task</p>
+}
+

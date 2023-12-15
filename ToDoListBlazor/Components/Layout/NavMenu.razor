@@ -15,8 +15,8 @@
             @foreach (var task in tasks)
             {
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> @task
+                    <NavLink class="nav-link" href="@($"?task={task}")" Match="NavLinkMatch.All">
+                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Задача @task
                     </NavLink>
                 </div>
             }
@@ -28,7 +28,7 @@
 
                 private void CreateNewTask()
                 {
-                    tasks.Add($"Задача {taskCount}");
+                    tasks.Add($"{taskCount}");
                     taskCount++;
                 }
             }
