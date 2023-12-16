@@ -16,7 +16,7 @@ builder.Services.AddDbContext<ProblemContext>
     (options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddTransient<IProblems, ProblemManager>();
+builder.Services.AddTransient<IProblem, ProblemManager>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();

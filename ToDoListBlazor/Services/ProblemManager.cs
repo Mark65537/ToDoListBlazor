@@ -4,7 +4,7 @@ using ToDoListBlazor.Models;
 
 namespace ToDoListBlazor.Services
 {
-    public class ProblemManager : IProblems
+    public class ProblemManager : IProblem
     {
         readonly ProblemContext _dbContext = new();
         public ProblemManager(ProblemContext dbContext)

@@ -2,7 +2,7 @@
 
 namespace ToDoListBlazor.Interfaces
 {
-    public interface IProblems
+    public interface IProblem
     {
         public List<Problem> GetProblemDetails();
         public void AddProblem(Problem user);
