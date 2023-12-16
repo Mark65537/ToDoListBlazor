@@ -12,24 +12,24 @@
         <nav class="flex-column">
 
             <button @onclick="CreateNewTask" class="navbutton">Создать новую задачу</button>
-            @foreach (var task in tasks)
+            @foreach (var problem in problems)
             {
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="@($"?task={task}")" Match="NavLinkMatch.All">
-                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Задача @task
+                    <NavLink class="nav-link" href="@($"?task={problem}")" Match="NavLinkMatch.All">
+                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Задача @problem
                     </NavLink>
                 </div>
             }
 
             @code {
-                private List<string> tasks = new List<string>();
+                private List<string> problems = new List<string>();
 
-                private int taskCount = 1;
+                private int problemCount = 1;
 
                 private void CreateNewTask()
                 {
-                    tasks.Add($"{taskCount}");
-                    taskCount++;
+                    problems.Add($"{problemCount}");
+                    problemCount++;
                 }
             }
 

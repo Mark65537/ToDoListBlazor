@@ -11,6 +11,6 @@
         public int PlannedComplexityTime { get; set; }
         public int? FactTime { get; set; }
         public DateTime? FinishDate { get; set; }
-        public virtual ICollection<Problem> SubProblems { get; set; }
+        public String SubProblems { get; set; }
     }
 }

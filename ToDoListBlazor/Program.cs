@@ -1,10 +1,23 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using ToDoListBlazor.Components;
+using ToDoListBlazor.Interfaces;
+using ToDoListBlazor.Models;
+using ToDoListBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddDbContext<ProblemContext>
+    (options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddTransient<IProblems, ProblemManager>();
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
