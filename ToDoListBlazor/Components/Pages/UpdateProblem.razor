@@ -1,10 +1,10 @@
-﻿@page "/add"
+﻿@page "/update/{Id}"
 @using ToDoListBlazor.Models
 @using ToDoListBlazor.Services
 @inject NavigationManager NavManager
 @rendermode InteractiveServer
 
-<h3>Создать задачу</h3>
+<h3>Изменить задачу</h3>
 
 <EditForm FormName="ProblemForm" Model="pModel" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
@@ -26,25 +26,45 @@
     </div>
 
     <div>
+        <label for="Status">Status</label>
+        <InputSelect id="Status" @bind-Value="pModel.Status">
+            @foreach (ProblemStatus status in Enum.GetValues(typeof(ProblemStatus)))
+            {
+                if (status != ProblemStatus.CREATED)
+                {
+                    <option value="@status">@status</option>
+                }
+            }
+        </InputSelect>
+    </div>
+
+    <div>
         <label for="PlannedComplexityTime">Planned Complexity Time</label>
         <InputNumber id="PlannedComplexityTime" @bind-Value="pModel.PlannedComplexityTime" />
     </div>
 
     <div>
-        <button type="submit">Create</button>
+        <button type="submit">Update</button>
     </div>
 </EditForm>
 
 @code {
+    [Parameter]
+    public string Id { get; set; }
+
     private Problem pModel = new();
     private ProblemManager pManager = new();
 
+    protected override void OnInitialized()
+    {
+        pModel = pManager.GetProblemData(int.Parse(Id));
+    }
+
     private void HandleValidSubmit()
-    {        
-        pModel.StartDate = DateTime.Now;
-        pManager.AddProblem(pModel);
-        NavManager.NavigateTo("/");
+    {
+        pManager.UpdateProblemDetails(pModel);
     }
 }
+
 
 

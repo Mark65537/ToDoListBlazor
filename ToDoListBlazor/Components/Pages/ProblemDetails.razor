@@ -2,6 +2,7 @@
 @using ToDoListBlazor.Models
 @using ToDoListBlazor.Services
 @inject NavigationManager NavManager
+@inject HttpClient HttpClient
 @rendermode InteractiveServer
 
 <PageTitle>Problem Detail</PageTitle>
@@ -21,6 +22,13 @@
         }
     }
 
+    private void UpdateProblemDetails(int id)
+    {
+        NavManager.NavigateTo($"/update/{id}");
+    }
+
+
+    
     private void AddSubProblem(int id)
     {
 
@@ -37,7 +45,7 @@
     <div class="buttons">
         @if (problem.FinishDate == null)
         {
-            <button class="abutton" @onclick="()=>pManager.UpdateProblemDetails(problem)">Изменить</button>
+            <button class="abutton" @onclick="()=>UpdateProblemDetails(problem.Id)">Изменить</button>
             <button class="abutton" @onclick="()=>AddSubProblem(problem.Id)">Добавить подзадачу</button>
         }
         @* <button class="btn btn-danger" @onclick="test">Тест</button> *@

@@ -113,6 +113,7 @@ namespace ToDoListBlazor.Services
             {
                 _dbContext.Entry(problem).State = EntityState.Modified;
                 _dbContext.SaveChanges();
+                Console.WriteLine("UPDATED: "+ problem.Id);
             }
             catch
             {
