@@ -1,7 +1,7 @@
 ﻿@using ToDoListBlazor.Controllers
 @using ToDoListBlazor.Models
 @using ToDoListBlazor.Services
-@inject HttpClient Http
+@inject NavigationManager NavManager
 @rendermode InteractiveServer
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -57,9 +57,7 @@
                 // private List<string> problems = new List<string>();
                 private void CreateNewProblem()
                 {
-                    
-                    // problemList.Add(null);
-                    // problemCount++;
+                    NavManager.NavigateTo("/add");
                 }
             }
 

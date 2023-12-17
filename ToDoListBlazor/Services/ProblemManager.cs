@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Data.SqlTypes;
 using ToDoListBlazor.Interfaces;
 using ToDoListBlazor.Models;
 
@@ -93,15 +94,18 @@ namespace ToDoListBlazor.Services
 
         public List<Problem> GetProblemDetails()
         {
+            //List<Problem>? problems;
             try
             {
-                return _dbContext.Problems.ToList();
+                return _dbContext.Problems.ToList();                
             }
-            catch
-            {
-                throw;
+            catch(SqlNullValueException ex)
+            {               
+               Console.WriteLine(ex.ToString());                    
+               return null;
             }
         }
+
 
         public void UpdateProblemDetails(Problem problem)
         {

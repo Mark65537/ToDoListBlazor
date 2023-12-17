@@ -1,54 +1,58 @@
 ﻿@page "/add"
+@using ToDoListBlazor.Models
+@using ToDoListBlazor.Services
 @inject NavigationManager NavManager
+@rendermode InteractiveServer
 
 <h3>Создать задачу</h3>
 
-@* <EditForm Model="taskModel" OnValidSubmit="HandleValidSubmit">
+<EditForm FormName="ProblemForm" Model="pModel" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
     <div>
         <label for="Title">Title</label>
-        <InputText id="Title" @bind-Value="taskModel.Title" />
-        <ValidationMessage For="@(() => taskModel.Title)" />
+        <InputText id="Title" @bind-Value="pModel.Title" />
     </div>
+
     <div>
         <label for="Description">Description</label>
-        <InputText id="Description" @bind-Value="taskModel.Description" />
-        <ValidationMessage For="@(() => taskModel.Description)" />
+        <InputTextArea id="Description" @bind-Value="pModel.Description" />
     </div>
+
     <div>
         <label for="Executors">Executors</label>
-        <InputText id="Executors" @bind-Value="taskModel.Executors" />
-        <ValidationMessage For="@(() => taskModel.Executors)" />
+        <InputText id="Executors" @bind-Value="pModel.Executors" />
     </div>
+
     <div>
         <label for="PlannedComplexityTime">Planned Complexity Time</label>
-        <InputNumber id="PlannedComplexityTime" @bind-Value="taskModel.PlannedComplexityTime" min="0" />
-        <ValidationMessage For="@(() => taskModel.PlannedComplexityTime)" />
+        <InputNumber id="PlannedComplexityTime" @bind-Value="pModel.PlannedComplexityTime" />
     </div>
+
     <div>
-        <button type="submit" class="btn btn-success">Создать</button>
-        <button class="btn btn-primary" @onclick="GoBack">Назад</button>
+        <button type="submit">Create</button>
     </div>
 </EditForm>
 
 @code {
-    private TaskModel taskModel = new TaskModel();
+    private Problem pModel = new();
+    private ProblemManager pManager = new();
 
     private void HandleValidSubmit()
-    {
-        // Обработка валидной отправки формы
-    }
+    {        
+        pModel.StartDate = DateTime.Now;
+        // var newProblem = new Problem
+        // {
+        //     Title = pModel.Title,
+        //     Description = pModel.Description,
+        //     Executors = pModel.Executors,
+        //     PlannedComplexityTime = pModel.PlannedComplexityTime,
+        //     StartDate = DateTime.Now,
+        // };
 
-    private void GoBack()
-    {
-        NavManager.NavigateTo("/index");
+        pManager.AddProblem(pModel);
     }
+}
 
-    public class TaskModel
-    {
-        // Определение свойств модели
-    }
-} *@
 
