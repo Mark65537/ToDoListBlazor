@@ -2,7 +2,7 @@
 {
     public class Problem
     {
-        public int? Id { get; set; }
+        public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string Executors { get; set; }
@@ -11,6 +11,6 @@
         public int PlannedComplexityTime { get; set; }
         public int? FactTime { get; set; }
         public DateTime? FinishDate { get; set; }
-        public String SubProblems { get; set; }
+        public String? SubProblemsId { get; set; }
     }
 }

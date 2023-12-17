@@ -1,4 +1,8 @@
-﻿@rendermode InteractiveServer
+﻿@using ToDoListBlazor.Controllers
+@using ToDoListBlazor.Models
+@using ToDoListBlazor.Services
+@inject HttpClient Http
+@rendermode InteractiveServer
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">ToDoListBlazor</a>
@@ -11,25 +15,51 @@
     <div class="nav-scrollable">
         <nav class="flex-column">
 
-            <button @onclick="CreateNewTask" class="navbutton">Создать новую задачу</button>
-            @foreach (var problem in problems)
+            <button @onclick="CreateNewProblem" class="navbutton">Создать новую задачу</button>
+
+            @if (problemList == null)
             {
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="@($"?task={problem}")" Match="NavLinkMatch.All">
-                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Задача @problem
-                    </NavLink>
-                </div>
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+                @foreach (var problem in problemList)
+                {
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="@($"?id={problem.Id}")" Match="NavLinkMatch.All">
+                            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> @problem.Title
+                        </NavLink>
+                    </div>
+                }
             }
 
             @code {
-                private List<string> problems = new List<string>();
+                protected List<Problem> problemList = new();
+                public ProblemManager pManager = new();
+
+                protected override void OnInitialized()
+                {
+                    problemList = pManager.GetProblemDetails();
+                }
+                // protected override async Task OnInitializedAsync()
+                // {
+                //     await GetProblem();
+                // }
+                // protected async Task GetProblem()
+                // {
+                //     // var p = new ProblemController(null);
+                //     // await p.Get();
+                //     problemList = await Http.GetFromJsonAsync<List<Problem>>("https://localhost:7202/api/Problem/Get");
+                // }
 
                 private int problemCount = 1;
 
-                private void CreateNewTask()
+                // private List<string> problems = new List<string>();
+                private void CreateNewProblem()
                 {
-                    problems.Add($"{problemCount}");
-                    problemCount++;
+                    
+                    // problemList.Add(null);
+                    // problemCount++;
                 }
             }
 

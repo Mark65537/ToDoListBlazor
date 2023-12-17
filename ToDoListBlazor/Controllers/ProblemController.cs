@@ -14,9 +14,11 @@ namespace ToDoListBlazor.Controllers
         {
             _IProblem = iProblem;
         }
-        [HttpGet]
+        [HttpGet("Get")]
         public async Task<List<Problem>> Get()
         {
+            Console.WriteLine("Get");
+            //return null;
             return await Task.FromResult(_IProblem.GetProblemDetails());
         }
         [HttpGet("{id}")]

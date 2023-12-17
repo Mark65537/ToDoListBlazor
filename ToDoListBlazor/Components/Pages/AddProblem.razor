@@ -1,0 +1,54 @@
+﻿@page "/add"
+@inject NavigationManager NavManager
+
+<h3>Создать задачу</h3>
+
+@* <EditForm Model="taskModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label for="Title">Title</label>
+        <InputText id="Title" @bind-Value="taskModel.Title" />
+        <ValidationMessage For="@(() => taskModel.Title)" />
+    </div>
+    <div>
+        <label for="Description">Description</label>
+        <InputText id="Description" @bind-Value="taskModel.Description" />
+        <ValidationMessage For="@(() => taskModel.Description)" />
+    </div>
+    <div>
+        <label for="Executors">Executors</label>
+        <InputText id="Executors" @bind-Value="taskModel.Executors" />
+        <ValidationMessage For="@(() => taskModel.Executors)" />
+    </div>
+    <div>
+        <label for="PlannedComplexityTime">Planned Complexity Time</label>
+        <InputNumber id="PlannedComplexityTime" @bind-Value="taskModel.PlannedComplexityTime" min="0" />
+        <ValidationMessage For="@(() => taskModel.PlannedComplexityTime)" />
+    </div>
+    <div>
+        <button type="submit" class="btn btn-success">Создать</button>
+        <button class="btn btn-primary" @onclick="GoBack">Назад</button>
+    </div>
+</EditForm>
+
+@code {
+    private TaskModel taskModel = new TaskModel();
+
+    private void HandleValidSubmit()
+    {
+        // Обработка валидной отправки формы
+    }
+
+    private void GoBack()
+    {
+        NavManager.NavigateTo("/index");
+    }
+
+    public class TaskModel
+    {
+        // Определение свойств модели
+    }
+} *@
+

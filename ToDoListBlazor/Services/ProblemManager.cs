@@ -7,15 +7,18 @@ namespace ToDoListBlazor.Services
     public class ProblemManager : IProblem
     {
         readonly ProblemContext _dbContext = new();
+        public ProblemManager()
+        {
+        }
         public ProblemManager(ProblemContext dbContext)
         {
             _dbContext = dbContext;
         }
-        public void AddProblem(Problem user)
+        public void AddProblem(Problem problem)
         {
             try
             {
-                _dbContext.Problems.Add(user);
+                _dbContext.Problems.Add(problem);
                 _dbContext.SaveChanges();
             }
             catch

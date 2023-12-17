@@ -1,0 +1,43 @@
+﻿@page "/"
+@using ToDoListBlazor.Models
+@using ToDoListBlazor.Services
+@inject NavigationManager NavManager
+
+<PageTitle>Problem Detail</PageTitle>
+
+@code {
+    private string id;
+    private Problem problem;
+    private ProblemManager pManager = new();
+
+    protected override void OnInitialized()
+    {
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var id))
+        {
+            problem = pManager.GetProblemData(int.Parse(id));
+        }
+    }
+}
+
+@if (problem != null)
+{
+    <div class="buttons">
+        @if (problem.FinishDate == null)
+        {
+            <button class="abutton" @onclick="()=>pManager.UpdateProblemDetails(problem)">Изменить</button>
+            @* <button class="abutton" @onclick="()=>AddSubProblem(problem.Id)">Добавить подзадачу</button> *@
+        }
+        <button class="abutton" @onclick="()=>pManager.DeleteProblem(problem.Id)">Удалить</button>
+    </div>
+    <p>Дата создания: @problem.StartDate</p>
+    @if (problem.FinishDate != null)
+    {
+        <p>Дата завершения: @problem.FinishDate</p>
+        <p>Время выполнения: @problem.FactTime</p>
+    }
+    <b>@problem.Title</b>
+    <p>@problem.Description</p>
+}
+
