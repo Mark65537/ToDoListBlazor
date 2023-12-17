@@ -68,8 +68,6 @@
     protected async Task GetProblems()
     {
         problemList = await pManager.GetProblemDetailsAsync();
-        // var p = new ProblemController(null);
-        // await p.Get();
         // problemList = await Http.GetFromJsonAsync<List<Problem>>("https://localhost:7202/api/Problem/Get");
     }
 

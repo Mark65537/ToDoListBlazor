@@ -9,7 +9,7 @@
         public DateTime StartDate { get; set; }
         public ProblemStatus Status { get; set; }
         public int PlannedComplexityTime { get; set; }
-        public int? FactTime { get; set; }
+        public TimeSpan? FactTime { get; set; }
         public DateTime? FinishDate { get; set; }
         public String? SubProblemsId { get; set; }
     }

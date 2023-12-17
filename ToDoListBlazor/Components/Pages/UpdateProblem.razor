@@ -28,12 +28,9 @@
     <div>
         <label for="Status">Status</label>
         <InputSelect id="Status" @bind-Value="pModel.Status">
-            @foreach (ProblemStatus status in Enum.GetValues(typeof(ProblemStatus)))
+            @foreach (var status in availableStatuses)
             {
-                if (status != ProblemStatus.CREATED)
-                {
-                    <option value="@status">@status</option>
-                }
+                <option value="@status">@status</option>
             }
         </InputSelect>
     </div>
@@ -52,17 +49,75 @@
     [Parameter]
     public string Id { get; set; }
 
+    private char separator = '|';
+
     private Problem pModel = new();
     private ProblemManager pManager = new();
+
+    List<ProblemStatus> availableStatuses;
 
     protected override void OnInitialized()
     {
         pModel = pManager.GetProblemData(int.Parse(Id));
+
+        availableStatuses = new List<ProblemStatus> { pModel.Status };
+
+        if (pModel.Status == ProblemStatus.CREATED)
+        {
+            availableStatuses.Add(ProblemStatus.PROCESSING);
+        }
+        else if (pModel.Status == ProblemStatus.PROCESSING)
+        {
+            availableStatuses.Add(ProblemStatus.PAUSED);
+        }
+        else if (pModel.Status == ProblemStatus.PAUSED)
+        {
+            availableStatuses.Add(ProblemStatus.DONE);
+        }
+    }
+
+    private void DoneAllSubProblems(Problem problem)
+    {
+        if (!string.IsNullOrEmpty(problem.SubProblemsId))
+        {
+            IEnumerable<int> subProblemIds = null;
+
+            if (problem.SubProblemsId.Contains(separator))
+            {
+                subProblemIds = problem.SubProblemsId.Split(separator).Select(int.Parse);
+            }
+            else
+            {
+                subProblemIds = Enumerable.Repeat(int.Parse(problem.SubProblemsId), 1);
+            }
+
+            var subProblems = subProblemIds.Select(id => pManager.GetProblemData(id))
+                               .Where(subProblem => subProblem != null)
+                               .ToList();
+            foreach (var subProblem in subProblems)
+            {
+                subProblem.FinishDate = DateTime.Now;
+                subProblem.FactTime = subProblem.FinishDate - subProblem.StartDate;
+                subProblem.Status = ProblemStatus.DONE;
+
+                DoneAllSubProblems(subProblem);
+            }
+        }
     }
 
     private void HandleValidSubmit()
     {
+
+        if (pModel.Status == ProblemStatus.DONE)
+        {
+            pModel.FinishDate = DateTime.Now;
+            pModel.FactTime = pModel.FinishDate - pModel.StartDate;
+
+            DoneAllSubProblems(pModel);            
+        }
         pManager.UpdateProblemDetails(pModel);
+
+        NavManager.NavigateTo("/");
     }
 }
 

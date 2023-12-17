@@ -62,13 +62,19 @@
         <button class="btn btn-danger" @onclick="() => DeleteProblem(problem.Id)">Удалить</button>
 
     </div>
+
+
+    <p>Наименование: <b>@problem.Title</b></p>    
+    <p>Описание: @problem.Description</p>
+    <p>Исполнители: @problem.Executors</p>
+    <p>Статус: @problem.Status</p>
+
     <p>Дата создания: @problem.StartDate</p>
+    <p>Плановая трудоёмкость: @problem.PlannedComplexityTime</p>
     @if (problem.FinishDate != null)
     {
         <p>Дата завершения: @problem.FinishDate</p>
-        <p>Время выполнения: @problem.FactTime</p>
+        <p>Фактическое Время выполнения: @problem.FactTime</p>
     }
-    <b>@problem.Title</b>
-    <p>@problem.Description</p>
 }
 
