@@ -1,7 +1,8 @@
-﻿@page "/"
+﻿@page "/problem"
 @using ToDoListBlazor.Models
 @using ToDoListBlazor.Services
 @inject NavigationManager NavManager
+@rendermode InteractiveServer
 
 <PageTitle>Problem Detail</PageTitle>
 
@@ -19,6 +20,16 @@
             problem = pManager.GetProblemData(int.Parse(id));
         }
     }
+
+    private void AddSubProblem(int id)
+    {
+
+    }
+
+    private void test()
+    {
+        Console.WriteLine("test");
+    }
 }
 
 @if (problem != null)
@@ -27,9 +38,11 @@
         @if (problem.FinishDate == null)
         {
             <button class="abutton" @onclick="()=>pManager.UpdateProblemDetails(problem)">Изменить</button>
-            @* <button class="abutton" @onclick="()=>AddSubProblem(problem.Id)">Добавить подзадачу</button> *@
+            <button class="abutton" @onclick="()=>AddSubProblem(problem.Id)">Добавить подзадачу</button>
         }
-        <button class="abutton" @onclick="()=>pManager.DeleteProblem(problem.Id)">Удалить</button>
+        @* <button class="btn btn-danger" @onclick="test">Тест</button> *@
+        <button class="btn btn-danger" @onclick="(() => pManager.DeleteProblem(problem.Id))">Удалить</button>
+
     </div>
     <p>Дата создания: @problem.StartDate</p>
     @if (problem.FinishDate != null)
