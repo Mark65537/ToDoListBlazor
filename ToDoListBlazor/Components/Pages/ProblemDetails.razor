@@ -27,11 +27,9 @@
         NavManager.NavigateTo($"/update/{id}");
     }
 
-
-    
     private void AddSubProblem(int id)
     {
-
+        NavManager.NavigateTo($"/addsub/{id}");
     }
 
     private void test()
@@ -49,7 +47,7 @@
             <button class="abutton" @onclick="()=>AddSubProblem(problem.Id)">Добавить подзадачу</button>
         }
         @* <button class="btn btn-danger" @onclick="test">Тест</button> *@
-        <button class="btn btn-danger" @onclick="(() => pManager.DeleteProblem(problem.Id))">Удалить</button>
+        <button class="btn btn-danger" @onclick="() => pManager.DeleteProblem(problem.Id)">Удалить</button>
 
     </div>
     <p>Дата создания: @problem.StartDate</p>

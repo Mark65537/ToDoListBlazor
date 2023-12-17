@@ -1,0 +1,64 @@
+﻿@page "/addsub/{Id}"
+@using ToDoListBlazor.Models
+@using ToDoListBlazor.Services
+@inject NavigationManager NavManager
+@rendermode InteractiveServer
+
+<h3>Создать Подзадачу</h3>
+
+<EditForm FormName="ProblemForm" Model="pModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Задача: @mainProblem.Title</label>
+    </div>
+
+    <div>
+        <label for="Title">Title</label>
+        <InputText id="Title" @bind-Value="pModel.Title" />
+    </div>
+
+    <div>
+        <label for="Description">Description</label>
+        <InputTextArea id="Description" @bind-Value="pModel.Description" />
+    </div>
+
+    <div>
+        <label for="Executors">Executors</label>
+        <InputText id="Executors" @bind-Value="pModel.Executors" />
+    </div>
+
+    <div>
+        <label for="PlannedComplexityTime">Planned Complexity Time</label>
+        <InputNumber id="PlannedComplexityTime" @bind-Value="pModel.PlannedComplexityTime" />
+    </div>
+
+    <div>
+        <button type="submit">Create</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private Problem pModel = new();
+    private Problem mainProblem = new();
+    private ProblemManager pManager = new();
+
+    protected override void OnInitialized()
+    {
+        mainProblem = pManager.GetProblemData(int.Parse(Id));
+    }
+
+    private void HandleValidSubmit()
+    {
+        pModel.StartDate = DateTime.Now;
+        pManager.AddSubProblem(mainProblem, pModel);
+        NavManager.NavigateTo("/");
+    }
+}
+
+
+

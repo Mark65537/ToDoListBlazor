@@ -15,18 +15,20 @@ namespace ToDoListBlazor.Services
         {
             _dbContext = dbContext;
         }
-        public void AddProblem(Problem problem)
+        public int AddProblem(Problem problem)
         {
             try
             {
                 _dbContext.Problems.Add(problem);
                 _dbContext.SaveChanges();
+                return problem.Id; // Возвращаем Id добавленного элемента
             }
             catch
             {
                 throw;
             }
         }
+
 
         public void DeleteProblem(int id)
         {
@@ -121,11 +123,22 @@ namespace ToDoListBlazor.Services
             }
         }
 
-        public void AddSubProblem(int id)
+        public void AddSubProblem(Problem mainProblem,Problem subProblem)
         {
-            //Problem problem = _dbContext.Problems.Find(id) ?? throw new ArgumentNullException();
-            //problem.SubProblemsId += "|" + id;
-            //_dbContext.SaveChanges();
+            int subPId = AddProblem(subProblem);                        
+            
+            if (string.IsNullOrEmpty(mainProblem.SubProblemsId))
+            {
+                mainProblem.SubProblemsId = subPId.ToString();
+            }
+            else
+            {
+                mainProblem.SubProblemsId = $"{mainProblem.SubProblemsId}|{subPId}";
+            }
+
+            UpdateProblemDetails(mainProblem);
+
+            Console.WriteLine($"SubProblem Added: {subPId}");
         }
     }
 }
