@@ -97,7 +97,7 @@
             foreach (var subProblem in subProblems)
             {
                 subProblem.FinishDate = DateTime.Now;
-                subProblem.FactTime = subProblem.FinishDate - subProblem.StartDate;
+                subProblem.FactTime = CalculateAndSaveDuration(subProblem.FinishDate - subProblem.StartDate);
                 subProblem.Status = ProblemStatus.DONE;
 
                 DoneAllSubProblems(subProblem);
@@ -105,13 +105,58 @@
         }
     }
 
+    private string CalculateAndSaveDuration(TimeSpan? duration)
+    {
+        if (duration == null)
+        {
+            throw new ArgumentNullException(nameof(duration));
+        }
+
+        // Преобразуем duration в нужный формат
+        string formattedDuration = "";
+        if (duration.Value.TotalDays >= 365)
+        {
+            int years = (int)(duration.Value.TotalDays / 365);
+            formattedDuration += $"{years} год(а) ";
+        }
+        if (duration.Value.TotalDays >= 7)
+        {
+            int weeks = (int)(duration.Value.TotalDays / 7);
+            formattedDuration += $"{weeks} неделя(и) ";
+        }
+        if (duration.Value.TotalDays >= 1)
+        {
+            int days = (int)duration.Value.TotalDays;
+            formattedDuration += $"{days} день(дней)";
+        }
+        if (duration.Value.TotalHours >= 1)
+        {
+            int hours = (int)duration.Value.TotalHours;
+            formattedDuration += $"{hours} час(ов)";
+        }
+        if (duration.Value.TotalMinutes >= 1)
+        {
+            int minutes = (int)duration.Value.TotalMinutes;
+            formattedDuration += $"{minutes} минута(ы)";
+        }
+        if (duration.Value.TotalSeconds >= 1)
+        {
+            int seconds = (int)duration.Value.TotalSeconds;
+            formattedDuration += $"{seconds} секунда(ы)";
+        }
+
+        // Сохраняем вычисленное значение в FactTime
+        return formattedDuration;
+    }
+
+
     private void HandleValidSubmit()
     {
 
         if (pModel.Status == ProblemStatus.DONE)
         {
-            pModel.FinishDate = DateTime.Now;
-            pModel.FactTime = pModel.FinishDate - pModel.StartDate;
+            pModel.FinishDate = DateTime.Now;            
+            pModel.FactTime = CalculateAndSaveDuration(pModel.FinishDate - pModel.StartDate);
 
             DoneAllSubProblems(pModel);            
         }
