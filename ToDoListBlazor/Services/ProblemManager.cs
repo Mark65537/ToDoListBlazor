@@ -32,7 +32,6 @@ namespace ToDoListBlazor.Services
 
         public void DeleteProblem(int id)
         {
-            Console.WriteLine("Deleted: " + id);
             try
             {
                 Problem? problem = _dbContext.Problems.Find(id);
@@ -40,6 +39,7 @@ namespace ToDoListBlazor.Services
                 {
                     _dbContext.Problems.Remove(problem);
                     _dbContext.SaveChanges();
+                    Console.WriteLine("Deleted: " + id);
                 }
                 else
                 {
@@ -105,6 +105,19 @@ namespace ToDoListBlazor.Services
             {               
                Console.WriteLine(ex.ToString());                    
                return null;
+            }
+        }
+
+        public async Task<List<Problem>> GetProblemDetailsAsync()
+        {
+            try
+            {
+                return await _dbContext.Problems.ToListAsync();
+            }
+            catch (SqlNullValueException ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
             }
         }
 

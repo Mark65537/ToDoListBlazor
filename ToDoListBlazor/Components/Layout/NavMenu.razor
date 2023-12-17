@@ -3,6 +3,7 @@
 @using ToDoListBlazor.Services
 @inject NavigationManager NavManager
 @rendermode InteractiveServer
+
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">ToDoListBlazor</a>
@@ -25,42 +26,151 @@
             {
                 @foreach (var problem in problemList)
                 {
+                    @* @test(problem); *@
+                    @* <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="@($"/problem?id={problem.Id}")" Match="NavLinkMatch.All">
+                            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> @problem.Title
+                        </NavLink>
+                    </div> *@
+                    @* <div style="margin-left: @(20 * 0)px;">@problem.Title</div> *@
+                    @RenderProblem(problem, 0);
+                }
+
+                @* @foreach (var problem in problemList)
+                {
                     <div class="nav-item px-3">
                         <NavLink class="nav-link" href="@($"/problem?id={problem.Id}")" Match="NavLinkMatch.All">
                             <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> @problem.Title
                         </NavLink>
                     </div>
-                }
+                } *@
             }
 
-            @code {
-                protected List<Problem> problemList = new();
-                public ProblemManager pManager = new();
-
-                protected override void OnInitialized()
-                {
-                    problemList = pManager.GetProblemDetails();
-                }
-                // protected override async Task OnInitializedAsync()
-                // {
-                //     await GetProblem();
-                // }
-                // protected async Task GetProblem()
-                // {
-                //     // var p = new ProblemController(null);
-                //     // await p.Get();
-                //     problemList = await Http.GetFromJsonAsync<List<Problem>>("https://localhost:7202/api/Problem/Get");
-                // }
-
-                private int problemCount = 1;
-
-                // private List<string> problems = new List<string>();
-                private void CreateNewProblem()
-                {
-                    NavManager.NavigateTo("/add");
-                }
-            }
 
         </nav>
     </div>
 </div>
+
+@code {
+    protected List<Problem> problemList = new();
+    protected List<Problem> subProblemList = new();
+    public ProblemManager pManager = new();
+    private char separator = '|';
+
+    // protected override void OnInitialized()
+    // {
+    //     problemList = pManager.GetProblemDetails();
+    // }
+    protected override async Task OnInitializedAsync()
+    {
+        await GetProblems();
+    }
+    protected async Task GetProblems()
+    {
+        problemList = await pManager.GetProblemDetailsAsync();
+        // var p = new ProblemController(null);
+        // await p.Get();
+        // problemList = await Http.GetFromJsonAsync<List<Problem>>("https://localhost:7202/api/Problem/Get");
+    }
+
+    RenderFragment RenderProblem(Problem problem, int level)
+    {
+        if (subProblemList.Contains(problem) && level == 0)
+        {
+            return null;
+        }
+        return builder =>
+        {            
+            builder.OpenElement(0, "div");
+            builder.AddAttribute(1, "class", $"nav-item px-3");
+            builder.AddAttribute(1, "style", $"margin-left: {20 * level}px;");
+
+            builder.OpenElement(2, "a");
+            // builder.OpenComponent<NavLink>(2);
+            builder.AddAttribute(3, "class", "nav-link");
+            builder.AddAttribute(4, "href", $"/problem/{problem.Id}");
+            // builder.AddAttribute(5, "Match", NavLinkMatch.All);
+
+            builder.OpenElement(6, "span");
+            builder.AddAttribute(7, "class", "bi bi-house-door-fill-nav-menu");
+            builder.AddAttribute(8, "aria-hidden", "true");
+            builder.AddContent(9, problem.Title);
+            builder.CloseElement();
+
+
+            builder.CloseElement();
+
+            builder.CloseElement();
+
+            // builder.OpenElement(0, "div");
+            // builder.AddAttribute(1, "class", $"nav-item px-{3 * level}");
+            // builder.OpenComponent<NavLink>(2);
+            // builder.AddAttribute(3, "class", "nav-link");
+            // builder.AddAttribute(4, "href", $"/problem?id={problem.Id}");
+            // builder.AddAttribute(5, "Match", NavLinkMatch.All);
+            // builder.OpenElement(6, "span");
+            // builder.AddAttribute(7, "class", "bi bi-house-door-fill-nav-menu");
+            // builder.AddAttribute(8, "aria-hidden", "true");
+            // builder.AddContent(9, "dnvjksdbkvsd"); //Добавляем пробел или другой символ, если необходимо
+            // builder.CloseElement();
+            // builder.AddContent(10, problem.Title);
+            // builder.CloseComponent();
+            // builder.CloseElement();
+
+            if (!string.IsNullOrEmpty(problem.SubProblemsId))
+            {
+                IEnumerable<int> subProblemIds = null;
+
+                if (problem.SubProblemsId.Contains(separator))
+                {
+                    subProblemIds = problem.SubProblemsId.Split(separator).Select(int.Parse);
+                }
+                else
+                {
+                    subProblemIds = Enumerable.Repeat(int.Parse(problem.SubProblemsId), 1);
+                }
+
+
+                var subProblems = problemList.Where(p => subProblemIds.Contains(p.Id)).ToList();
+                subProblemList.AddRange(subProblems);
+                foreach (var subProblem in subProblems)
+                {
+                    var subProblemRenderFragment = RenderProblem(subProblem, level + 1);
+                    builder.AddContent(10, subProblemRenderFragment);
+                }
+            }
+        };
+    }
+
+    RenderFragment test(Problem problem)
+    {
+            return builder =>
+        {
+            builder.OpenElement(0, "div");
+            builder.AddAttribute(1, "class", $"nav-item px-{3}");
+
+            builder.OpenElement(6, "a");
+            // builder.OpenComponent<NavLink>(2);
+            builder.AddAttribute(3, "class", "nav-link");
+            builder.AddAttribute(4, "href", $"/problem?id={problem.Id}");
+            builder.AddAttribute(5, "Match", NavLinkMatch.All);
+
+            builder.OpenElement(6, "span");
+            builder.AddAttribute(7, "class", "bi bi-house-door-fill-nav-menu");
+            builder.AddAttribute(8, "aria-hidden", "true");
+            // builder.AddContent(9, "dnvjksdbkvsd");
+            builder.AddContent(9, problem.Title);
+            builder.CloseElement();
+
+
+            builder.CloseElement();
+
+            builder.CloseElement();
+        };
+    }
+
+    private void CreateNewProblem()
+    {
+        NavManager.NavigateTo("/add");
+    }
+}

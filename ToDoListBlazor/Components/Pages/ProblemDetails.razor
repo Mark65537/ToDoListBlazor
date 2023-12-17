@@ -1,4 +1,4 @@
-﻿@page "/problem"
+﻿@page "/problem/{Id}"
 @using ToDoListBlazor.Models
 @using ToDoListBlazor.Services
 @inject NavigationManager NavManager
@@ -8,19 +8,25 @@
 <PageTitle>Problem Detail</PageTitle>
 
 @code {
-    private string id;
+    [Parameter]
+    public string Id { get; set; }
+
     private Problem problem;
     private ProblemManager pManager = new();
 
     protected override void OnInitialized()
     {
-        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
-
-        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var id))
-        {
-            problem = pManager.GetProblemData(int.Parse(id));
-        }
+        problem = pManager.GetProblemData(int.Parse(Id));
     }
+    // protected override void OnInitialized()
+    // {
+    //     var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+
+    //     if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var id))
+    //     {
+    //         problem = pManager.GetProblemData(int.Parse(id));
+    //     }
+    // }
 
     private void UpdateProblemDetails(int id)
     {
@@ -30,6 +36,12 @@
     private void AddSubProblem(int id)
     {
         NavManager.NavigateTo($"/addsub/{id}");
+    }
+
+    private void DeleteProblem(int id)
+    {
+        pManager.DeleteProblem(id);
+        NavManager.NavigateTo($"/");
     }
 
     private void test()
@@ -47,7 +59,7 @@
             <button class="abutton" @onclick="()=>AddSubProblem(problem.Id)">Добавить подзадачу</button>
         }
         @* <button class="btn btn-danger" @onclick="test">Тест</button> *@
-        <button class="btn btn-danger" @onclick="() => pManager.DeleteProblem(problem.Id)">Удалить</button>
+        <button class="btn btn-danger" @onclick="() => DeleteProblem(problem.Id)">Удалить</button>
 
     </div>
     <p>Дата создания: @problem.StartDate</p>
