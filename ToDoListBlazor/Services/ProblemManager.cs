@@ -212,12 +212,20 @@ namespace ToDoListBlazor.Services
                                    .ToList();
                 foreach (var subProblem in subProblems)
                 {
-                    totalFactTime += subProblem.FactTime.Value;
-                    totalFactTime += CalculatePlannedComplexityTime(subProblem);
+                    if (subProblem.FactTime == null)
+                    {
+                        subProblem.FinishDate = DateTime.Now;
+                        subProblem.FactTime = (int)subProblem.FinishDate.Value
+                                                .Subtract(subProblem.StartDate).TotalDays;
+                    }                    
+                    totalFactTime += CalculateFactTime(subProblem);
                 }
             }
             else
             {
+                problem.FinishDate = DateTime.Now;
+                problem.FactTime = (int)problem.FinishDate.Value
+                                        .Subtract(problem.StartDate).TotalDays;
                 totalFactTime += problem.FactTime.Value;
             }
 
@@ -276,7 +284,10 @@ namespace ToDoListBlazor.Services
                 {
                     if (subProblem.Status != ProblemStatus.PAUSED)
                     {
-                        return false;
+                        if (problem.Status != ProblemStatus.DONE)
+                        {
+                            return false;
+                        }
                     }
 
                     CheckSubProblems(subProblem);
@@ -285,7 +296,7 @@ namespace ToDoListBlazor.Services
                 return true;
             }
 
-            return problem.Status == ProblemStatus.PAUSED;
+            return problem.Status == ProblemStatus.PAUSED || problem.Status == ProblemStatus.DONE;
         }
 
 
