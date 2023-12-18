@@ -7,6 +7,8 @@ namespace ToDoListBlazor.Services
 {
     public class ProblemManager : IProblem
     {
+        private char separator = '|';
+
         readonly ProblemContext _dbContext = new();
         public ProblemManager()
         {
@@ -153,5 +155,185 @@ namespace ToDoListBlazor.Services
 
             Console.WriteLine($"SubProblem Added: {subPId}");
         }
+
+        public int CalculatePlannedComplexityTime(Problem problem)
+        {
+            int totalComplexityTime = 0;
+
+            if (!string.IsNullOrEmpty(problem.SubProblemsId))
+            {
+                IEnumerable<int> subProblemIds = null;
+
+                if (problem.SubProblemsId.Contains(separator))
+                {
+                    subProblemIds = problem.SubProblemsId.Split(separator).Select(int.Parse);
+                }
+                else
+                {
+                    subProblemIds = Enumerable.Repeat(int.Parse(problem.SubProblemsId), 1);
+                }
+
+                var subProblems = subProblemIds.Select(id => GetProblemData(id))
+                                   .Where(subProblem => subProblem != null)
+                                   .ToList();
+                foreach (var subProblem in subProblems)
+                {
+                    totalComplexityTime += CalculatePlannedComplexityTime(subProblem);
+                }
+                totalComplexityTime += problem.PlannedComplexityTime;
+            }
+            else
+            {
+                totalComplexityTime += problem.PlannedComplexityTime;
+            }
+
+            return totalComplexityTime;
+        }
+
+        public int CalculateFactTime(Problem problem)
+        {
+            int totalFactTime = 0;
+
+            if (!string.IsNullOrEmpty(problem.SubProblemsId))
+            {
+                IEnumerable<int> subProblemIds = null;
+
+                if (problem.SubProblemsId.Contains(separator))
+                {
+                    subProblemIds = problem.SubProblemsId.Split(separator).Select(int.Parse);
+                }
+                else
+                {
+                    subProblemIds = Enumerable.Repeat(int.Parse(problem.SubProblemsId), 1);
+                }
+
+                var subProblems = subProblemIds.Select(id => GetProblemData(id))
+                                   .Where(subProblem => subProblem != null)
+                                   .ToList();
+                foreach (var subProblem in subProblems)
+                {
+                    totalFactTime += subProblem.FactTime.Value;
+                    totalFactTime += CalculatePlannedComplexityTime(subProblem);
+                }
+            }
+            else
+            {
+                totalFactTime += problem.FactTime.Value;
+            }
+
+            return totalFactTime;
+        }
+
+        public void DoneAllSubProblems(Problem problem)
+        {
+            if (!string.IsNullOrEmpty(problem.SubProblemsId))
+            {
+                IEnumerable<int> subProblemIds = null;
+
+                if (problem.SubProblemsId.Contains(separator))
+                {
+                    subProblemIds = problem.SubProblemsId.Split(separator).Select(int.Parse);
+                }
+                else
+                {
+                    subProblemIds = Enumerable.Repeat(int.Parse(problem.SubProblemsId), 1);
+                }
+
+                var subProblems = subProblemIds.Select(id => GetProblemData(id))
+                                   .Where(subProblem => subProblem != null)
+                                   .ToList();
+                foreach (var subProblem in subProblems)
+                {
+                    subProblem.FinishDate = DateTime.Now;
+                    subProblem.FactTime = (int)subProblem.FinishDate.Value
+                                                        .Subtract(subProblem.StartDate).TotalDays;
+                    subProblem.Status = ProblemStatus.DONE;
+
+                    DoneAllSubProblems(subProblem);
+                }
+            }
+        }
+        public bool CheckSubProblems(Problem problem)
+        {
+            if (!string.IsNullOrEmpty(problem.SubProblemsId))
+            {
+                IEnumerable<int> subProblemIds;
+
+                if (problem.SubProblemsId.Contains(separator))
+                {
+                    subProblemIds = problem.SubProblemsId.Split(separator).Select(int.Parse);
+                }
+                else
+                {
+                    subProblemIds = Enumerable.Repeat(int.Parse(problem.SubProblemsId), 1);
+                }
+
+                var subProblems = subProblemIds.Select(GetProblemData)
+                                              .Where(subProblem => subProblem != null)
+                                              .ToList();
+
+                foreach (var subProblem in subProblems)
+                {
+                    if (subProblem.Status != ProblemStatus.PAUSED)
+                    {
+                        return false;
+                    }
+
+                    CheckSubProblems(subProblem);
+                }
+
+                return true;
+            }
+
+            return problem.Status == ProblemStatus.PAUSED;
+        }
+
+
+
+        private string CalculateAndSaveDuration(TimeSpan? duration)
+        {
+            if (duration == null)
+            {
+                throw new ArgumentNullException(nameof(duration));
+            }
+
+            // Преобразуем duration в нужный формат
+            string formattedDuration = "";
+            if (duration.Value.TotalDays >= 365)
+            {
+                int years = (int)(duration.Value.TotalDays / 365);
+                formattedDuration += $"{years} год(а) ";
+            }
+            if (duration.Value.TotalDays >= 7)
+            {
+                int weeks = (int)(duration.Value.TotalDays / 7);
+                formattedDuration += $"{weeks} неделя(и) ";
+            }
+            if (duration.Value.TotalDays >= 1)
+            {
+                int days = (int)duration.Value.TotalDays;
+                formattedDuration += $"{days} день(дней)";
+            }
+            if (duration.Value.TotalHours >= 1)
+            {
+                int hours = (int)duration.Value.TotalHours;
+                formattedDuration += $"{hours} час(ов)";
+            }
+            if (duration.Value.TotalMinutes >= 1)
+            {
+                int minutes = (int)duration.Value.TotalMinutes;
+                formattedDuration += $"{minutes} минута(ы)";
+            }
+            if (duration.Value.TotalSeconds >= 1)
+            {
+                int seconds = (int)duration.Value.TotalSeconds;
+                formattedDuration += $"{seconds} секунда(ы)";
+            }
+
+            // Сохраняем вычисленное значение в FactTime
+            return formattedDuration;
+        }
+
+
     }
 }

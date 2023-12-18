@@ -49,12 +49,10 @@
     [Parameter]
     public string Id { get; set; }
 
-    private char separator = '|';
-
     private Problem pModel = new();
     private ProblemManager pManager = new();
 
-    List<ProblemStatus> availableStatuses;
+    List<ProblemStatus> availableStatuses = new();
 
     protected override void OnInitialized()
     {
@@ -74,93 +72,21 @@
         {
             availableStatuses.Add(ProblemStatus.DONE);
         }
-    }
-
-    private void DoneAllSubProblems(Problem problem)
-    {
-        if (!string.IsNullOrEmpty(problem.SubProblemsId))
-        {
-            IEnumerable<int> subProblemIds = null;
-
-            if (problem.SubProblemsId.Contains(separator))
-            {
-                subProblemIds = problem.SubProblemsId.Split(separator).Select(int.Parse);
-            }
-            else
-            {
-                subProblemIds = Enumerable.Repeat(int.Parse(problem.SubProblemsId), 1);
-            }
-
-            var subProblems = subProblemIds.Select(id => pManager.GetProblemData(id))
-                               .Where(subProblem => subProblem != null)
-                               .ToList();
-            foreach (var subProblem in subProblems)
-            {
-                subProblem.FinishDate = DateTime.Now;
-                subProblem.FactTime = (int)subProblem.FinishDate.Value
-                                                    .Subtract(subProblem.StartDate).TotalDays;
-                subProblem.Status = ProblemStatus.DONE;
-
-                DoneAllSubProblems(subProblem);
-            }
-        }
-    }
-
-    private string CalculateAndSaveDuration(TimeSpan? duration)
-    {
-        if (duration == null)
-        {
-            throw new ArgumentNullException(nameof(duration));
-        }
-
-        // Преобразуем duration в нужный формат
-        string formattedDuration = "";
-        if (duration.Value.TotalDays >= 365)
-        {
-            int years = (int)(duration.Value.TotalDays / 365);
-            formattedDuration += $"{years} год(а) ";
-        }
-        if (duration.Value.TotalDays >= 7)
-        {
-            int weeks = (int)(duration.Value.TotalDays / 7);
-            formattedDuration += $"{weeks} неделя(и) ";
-        }
-        if (duration.Value.TotalDays >= 1)
-        {
-            int days = (int)duration.Value.TotalDays;
-            formattedDuration += $"{days} день(дней)";
-        }
-        if (duration.Value.TotalHours >= 1)
-        {
-            int hours = (int)duration.Value.TotalHours;
-            formattedDuration += $"{hours} час(ов)";
-        }
-        if (duration.Value.TotalMinutes >= 1)
-        {
-            int minutes = (int)duration.Value.TotalMinutes;
-            formattedDuration += $"{minutes} минута(ы)";
-        }
-        if (duration.Value.TotalSeconds >= 1)
-        {
-            int seconds = (int)duration.Value.TotalSeconds;
-            formattedDuration += $"{seconds} секунда(ы)";
-        }
-
-        // Сохраняем вычисленное значение в FactTime
-        return formattedDuration;
-    }
-
+    }        
 
     private void HandleValidSubmit()
     {
 
         if (pModel.Status == ProblemStatus.DONE)
         {
-            pModel.FinishDate = DateTime.Now;            
-            pModel.FactTime = (int)pModel.FinishDate.Value.Subtract(pModel.StartDate).TotalDays;
-            // pModel.FactTime = CalculateAndSaveDuration(pModel.FinishDate - pModel.StartDate);
+            if (pManager.CheckSubProblems(pModel))
+            {
+                pModel.FinishDate = DateTime.Now;
+                pModel.FactTime = (int)pModel.FinishDate.Value.Subtract(pModel.StartDate).TotalDays;
+                pModel.FactTime = pManager.CalculateFactTime(pModel);
 
-            DoneAllSubProblems(pModel);            
+                pManager.DoneAllSubProblems(pModel);
+            }
         }
         pManager.UpdateProblemDetails(pModel);
 

@@ -12,5 +12,11 @@
         public int? FactTime { get; set; }
         public DateTime? FinishDate { get; set; }
         public String? SubProblemsId { get; set; }
+
+        public Problem() 
+        {
+            PlannedComplexityTime = 1;
+        }
+
     }
 }

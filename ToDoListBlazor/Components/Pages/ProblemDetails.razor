@@ -17,6 +17,7 @@
     protected override void OnInitialized()
     {
         problem = pManager.GetProblemData(int.Parse(Id));
+        problem.PlannedComplexityTime = pManager.CalculatePlannedComplexityTime(problem);
     }
 
     private void UpdateProblemDetails(int id)
@@ -60,7 +61,7 @@
     <p>Статус: @problem.Status</p>
 
     <p>Дата создания: @problem.StartDate</p>
-    <p>Плановая трудоёмкость: @problem.PlannedComplexityTime</p>
+    <p>Плановая трудоёмкость: @problem.PlannedComplexityTime Дней</p>
     @if (problem.FinishDate != null)
     {
         <p>Дата завершения: @problem.FinishDate</p>

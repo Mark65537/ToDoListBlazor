@@ -27,7 +27,7 @@
 
     <div>
         <label for="PlannedComplexityTime">Плановая трудоемкость задачи:</label>
-        <InputNumber id="PlannedComplexityTime" @bind-Value="pModel.PlannedComplexityTime" min="1" /> Дней
+        <InputNumber id="PlannedComplexityTime" @bind-Value="pModel.PlannedComplexityTime" min="1"/> Дней
     </div>
 
     <div>
@@ -37,37 +37,11 @@
 
 @code {
     private Problem pModel = new();
-    private ProblemManager pManager = new();
-
-    private char separator = '|';
-
-    private void CalculatePlannedComplexityTime(Problem problem)
-    {
-        if (!string.IsNullOrEmpty(problem.SubProblemsId))
-        {
-            IEnumerable<int> subProblemIds = null;
-
-            if (problem.SubProblemsId.Contains(separator))
-            {
-                subProblemIds = problem.SubProblemsId.Split(separator).Select(int.Parse);
-            }
-            else
-            {
-                subProblemIds = Enumerable.Repeat(int.Parse(problem.SubProblemsId), 1);
-            }
-
-            var subProblems = subProblemIds.Select(id => pManager.GetProblemData(id))
-                               .Where(subProblem => subProblem != null)
-                               .ToList();
-            foreach (var subProblem in subProblems)
-            {               
-                CalculatePlannedComplexityTime(subProblem);
-            }
-        }
-    }
+    private ProblemManager pManager = new();        
 
     private void HandleValidSubmit()
     {        
+        pModel.PlannedComplexityTime = pManager.CalculatePlannedComplexityTime(pModel);        
         pModel.StartDate = DateTime.Now;
         pManager.AddProblem(pModel);
         NavManager.NavigateTo("/", forceLoad: true);

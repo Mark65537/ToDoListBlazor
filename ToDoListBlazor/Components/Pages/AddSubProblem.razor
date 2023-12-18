@@ -52,10 +52,19 @@
         mainProblem = pManager.GetProblemData(int.Parse(Id));
     }
 
+
+
     private void HandleValidSubmit()
     {
         pModel.StartDate = DateTime.Now;
+
         pManager.AddSubProblem(mainProblem, pModel);
+
+        // mainProblem = pManager.GetProblemData(mainProblem.Id);
+        // mainProblem.PlannedComplexityTime += pManager.CalculatePlannedComplexityTime(mainProblem);
+
+        // pManager.UpdateProblemDetails(mainProblem);
+
         NavManager.NavigateTo("/", forceLoad: true);
     }
 }
