@@ -11,22 +11,22 @@
     <ValidationSummary />
 
     <div>
-        <label for="Title">Title</label>
+        <label for="Title">Наименование:</label>
         <InputText id="Title" @bind-Value="pModel.Title" />
     </div>
 
     <div>
-        <label for="Description">Description</label>
+        <label for="Description">Описание:</label>
         <InputTextArea id="Description" @bind-Value="pModel.Description" />
     </div>
 
     <div>
-        <label for="Executors">Executors</label>
-        <InputText id="Executors" @bind-Value="pModel.Executors" />
+        <label for="Executors">Список исполнителей:</label>
+        <InputTextArea id="Executors" @bind-Value="pModel.Executors" />
     </div>
 
     <div>
-        <label for="Status">Status</label>
+        <label for="Status">Статус:</label>
         <InputSelect id="Status" @bind-Value="pModel.Status">
             @foreach (var status in availableStatuses)
             {
@@ -36,12 +36,12 @@
     </div>
 
     <div>
-        <label for="PlannedComplexityTime">Planned Complexity Time</label>
-        <InputNumber id="PlannedComplexityTime" @bind-Value="pModel.PlannedComplexityTime" />
+        <label for="PlannedComplexityTime">Плановая трудоемкость задачи:</label>
+        <InputNumber id="PlannedComplexityTime" @bind-Value="pModel.PlannedComplexityTime" min="1" /> Дней
     </div>
 
     <div>
-        <button type="submit">Update</button>
+        <button type="submit">Обновить</button>
     </div>
 </EditForm>
 
@@ -97,7 +97,8 @@
             foreach (var subProblem in subProblems)
             {
                 subProblem.FinishDate = DateTime.Now;
-                subProblem.FactTime = CalculateAndSaveDuration(subProblem.FinishDate - subProblem.StartDate);
+                subProblem.FactTime = (int)subProblem.FinishDate.Value
+                                                    .Subtract(subProblem.StartDate).TotalDays;
                 subProblem.Status = ProblemStatus.DONE;
 
                 DoneAllSubProblems(subProblem);
@@ -156,13 +157,14 @@
         if (pModel.Status == ProblemStatus.DONE)
         {
             pModel.FinishDate = DateTime.Now;            
-            pModel.FactTime = CalculateAndSaveDuration(pModel.FinishDate - pModel.StartDate);
+            pModel.FactTime = (int)pModel.FinishDate.Value.Subtract(pModel.StartDate).TotalDays;
+            // pModel.FactTime = CalculateAndSaveDuration(pModel.FinishDate - pModel.StartDate);
 
             DoneAllSubProblems(pModel);            
         }
         pManager.UpdateProblemDetails(pModel);
 
-        NavManager.NavigateTo("/");
+        NavManager.NavigateTo("/", forceLoad: true);
     }
 }
 

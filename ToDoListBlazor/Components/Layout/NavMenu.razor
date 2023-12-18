@@ -100,6 +100,7 @@
 
             builder.CloseElement();
 
+            #region 
             // builder.OpenElement(0, "div");
             // builder.AddAttribute(1, "class", $"nav-item px-{3 * level}");
             // builder.OpenComponent<NavLink>(2);
@@ -114,6 +115,7 @@
             // builder.AddContent(10, problem.Title);
             // builder.CloseComponent();
             // builder.CloseElement();
+            #endregion
 
             if (!string.IsNullOrEmpty(problem.SubProblemsId))
             {
