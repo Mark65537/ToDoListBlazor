@@ -11,31 +11,31 @@
     <ValidationSummary />
 
     <div>
-        <label>Задача: @mainProblem.Title</label>
+        <label>Подзадача для задачи: @mainProblem.Title</label>
     </div>
 
     <div>
-        <label for="Title">Title</label>
+        <label for="Title">Наименование:</label>
         <InputText id="Title" @bind-Value="pModel.Title" />
     </div>
 
     <div>
-        <label for="Description">Description</label>
+        <label for="Description">Описание:</label>
         <InputTextArea id="Description" @bind-Value="pModel.Description" />
     </div>
 
     <div>
-        <label for="Executors">Executors</label>
-        <InputText id="Executors" @bind-Value="pModel.Executors" />
+        <label for="Executors">Исполнители:</label>
+        <InputTextArea id="Executors" @bind-Value="pModel.Executors" />
     </div>
 
     <div>
-        <label for="PlannedComplexityTime">Planned Complexity Time</label>
-        <InputNumber id="PlannedComplexityTime" @bind-Value="pModel.PlannedComplexityTime" />
+        <label for="PlannedComplexityTime">Плановая трудоемкость задачи:</label>
+        <InputNumber id="PlannedComplexityTime" @bind-Value="pModel.PlannedComplexityTime" min="1" /> Дней
     </div>
 
     <div>
-        <button type="submit">Create</button>
+        <button type="submit">Создать</button>
     </div>
 </EditForm>
 
@@ -56,7 +56,7 @@
     {
         pModel.StartDate = DateTime.Now;
         pManager.AddSubProblem(mainProblem, pModel);
-        NavManager.NavigateTo("/");
+        NavManager.NavigateTo("/", forceLoad: true);
     }
 }
 
